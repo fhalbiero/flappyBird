@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "flappyBird",
-    "slug": "flappyBird",
+    "slug": "flappybird",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a81c879d-16c2-4d75-887b-b5929594fc89"
+      }
+    },
+    "owner": "fhalbiero"
   }
 }
