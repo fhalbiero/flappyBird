@@ -21,7 +21,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.fhalbiero.flappybird"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,6 +32,12 @@
         "projectId": "a81c879d-16c2-4d75-887b-b5929594fc89"
       }
     },
-    "owner": "fhalbiero"
+    "owner": "fhalbiero",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a81c879d-16c2-4d75-887b-b5929594fc89"
+    }
   }
 }

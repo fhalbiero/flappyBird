@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
-import { 
-  Platform, 
-  Text as ReactNativeText,
-  TouchableOpacity, 
-  View, 
-  useWindowDimensions,
-  ImageBackground, 
-} from "react-native";
+import { Platform, useWindowDimensions } from "react-native";
+import { useFonts, Inter_900Black  } from '@expo-google-fonts/inter';
 import { 
   useSharedValue, 
   withTiming, 
@@ -31,9 +25,14 @@ const pipeWidth = 120;
 const pipeHeight = 580;
 
 const App = () => {
+  const [fontsLoaded] = useFonts({
+    Inter_900Black 
+  });
+
   const { width, height } = useWindowDimensions();
   //Image Sources
-  const bg = useImage(require('./assets/sprites/background-day.png'));
+  const bg = useImage(require('./assets/sprites/background-night.png'));
+  const gameOverBg = useImage(require('./assets/sprites/gameover.png'));
   const ground = useImage(require('./assets/sprites/base.png'));
   const bird = useImage(require('./assets/sprites/yellowbird-upflap.png'));
   const pipeBottom = useImage(require('./assets/sprites/pipe-green.png'));
@@ -46,6 +45,9 @@ const App = () => {
 
   const gameOver = useSharedValue(false);
   const pipeX = useSharedValue(width);
+  const bgX1 = useSharedValue(0);
+  const bgX2 = useSharedValue(width - 20);
+  const pipeSpeed = useSharedValue(1);
   const birdYPosition = useSharedValue(height / 3);
   const birdXPosition = width / 4;
   const birdYVelocity = useSharedValue(0);
@@ -96,8 +98,19 @@ const App = () => {
   function moveMap() {
     pipeX.value = withRepeat(
       withSequence(
-        withTiming(-150, { duration: 3000, easing: Easing.linear }),
+        withTiming(-150, { duration: 3000 / pipeSpeed.value, easing: Easing.linear }),
         withTiming(width, { duration: 0 })
+      ), -1
+    );
+
+    bgX1.value = withRepeat(
+      withSequence(
+        withTiming(-width, { duration: 10000, easing: Easing.linear }),
+      ), -1
+    );
+    bgX2.value = withRepeat(
+      withSequence(
+        withTiming(-20, { duration: 10000, easing: Easing.linear }),
       ), -1
     );
   }
@@ -112,6 +125,7 @@ const App = () => {
     birdYVelocity.value = 0;
     gameOver.value = false;
     pipeX.value = width;
+    pipeSpeed.value = 1;
     runOnJS(setScore)(0);
     runOnJS(moveMap)();
   }
@@ -124,11 +138,12 @@ const App = () => {
     }
   });
 
-  const fontFamily = Platform.select({ ios: 'Helvetica', default: 'san-serif' });
+  const fontFamily = Platform.select({ ios: 'Inter_900Black', default: 'Arial' });
   const fontStyle = {
     fontFamily,
     fontSize: 40,
     fontWeight: 'bold',
+    textSha: ''
   }
   const font = matchFont(fontStyle);
 
@@ -200,56 +215,76 @@ const App = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={gesture}>
         <Canvas style={{ width, height: '100%' }} >
-          {/**Background */}
-          <Image image={bg} width={width} height={height} fit={'cover'} />
-          
-          {/**Pipes */}
-          <Image 
-            image={pipeTop} 
-            y={topPipeY} 
-            x={pipeX} 
-            width={pipeWidth} 
-            height={pipeHeight} 
-          />
-          <Image 
-            image={pipeBottom} 
-            y={bottomPipeY} 
-            x={pipeX} 
-            width={pipeWidth} 
-            height={pipeHeight} 
-          />
-          
-          {/**Ground */}
-          <Image 
-            image={ground} 
-            width={width} 
-            height={150} 
-            y={height - 50}  
-            fit={'cover'} 
-          />
-          
-          {/**Bird */}
-          <Group
-            transform={birdTransform}
-            origin={birdOrigin}
-          >
+            {/**Background */}
             <Image 
-              image={bird} 
-              y={birdYPosition} 
-              x={birdXPosition} 
-              width={64} 
-              height={48} 
+              x={bgX1}
+              image={bg} 
+              width={width} 
+              height={height} 
+              fit={'cover'} 
             />
-          </Group>
-
-          <Text 
-            x={width / 2} 
-            y={100} 
-            text={score.toString()} 
-            font={font}
-            color={'white'}
-          />
-        </Canvas>
+            <Image 
+              x={bgX2}
+              image={bg} 
+              width={width} 
+              height={height} 
+              fit={'cover'} 
+            />
+            
+            {/**Pipes */}
+            <Image 
+              image={pipeTop} 
+              y={topPipeY} 
+              x={pipeX} 
+              width={pipeWidth} 
+              height={pipeHeight} 
+            />
+            <Image 
+              image={pipeBottom} 
+              y={bottomPipeY} 
+              x={pipeX} 
+              width={pipeWidth} 
+              height={pipeHeight} 
+            />
+            
+            {/**Ground */}
+            <Image 
+              image={ground} 
+              width={width} 
+              height={150} 
+              y={height - 50}  
+              fit={'cover'} 
+            />
+            
+            {/**Bird */}
+            <Group
+              transform={birdTransform}
+              origin={birdOrigin}
+            >
+              <Image 
+                image={bird} 
+                y={birdYPosition} 
+                x={birdXPosition} 
+                width={64} 
+                height={48} 
+              />
+            </Group>
+  
+            <Text 
+              x={width - 40} 
+              y={80} 
+              text={score.toString()} 
+              font={font}
+              color={'black'}
+            />
+            <Text 
+              x={width - 41} 
+              y={81} 
+              text={score.toString()} 
+              font={font}
+              color={'white'}
+            />
+        </Canvas>         
       </GestureDetector>
     </GestureHandlerRootView>
   );
